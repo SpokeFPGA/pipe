@@ -3,13 +3,26 @@ name : SpokeFPGA:pipe:pipe:1.1
 
 filesets:
   rtl:
-    files: [rtl/pipe.sv : {file_type : verilogSource}]
+    files: 
+        - rtl/pipe.sv
+        - rtl/pipe_s.sv
+    file_type : verilogSource
 
   tb:
-    files: [sim/pipe_tb.sv : {file_type : systemVerilogSource}]
+    files: 
+        - sim/sim.svh : {is_include_file : true }
+        - sim/pipe_tb.sv
+        - sim/pipe_test.sv
+        - sim/pipe_primary.sv
+        - sim/pipe_secondary.sv
+    file_type : verilogSource
 
   crosslink_nx_evn:
     files: [crosslink_nx_evn/pipe.pdc : {file_type : PDC}]
+
+  verilator:
+    files:
+        - verilator/sim_main.cpp : { file_type : cppSource }
 
 targets:
   default: &default
@@ -25,6 +38,14 @@ targets:
       radiant : {part: LIFCL-40-9BG400C}
     toplevel : pipe_tb    
 
+  verilator:
+    default_tool: verilator
+    filesets : [rtl, tb, verilator]
+    tools:
+        verilator:
+            mode : cc
+    toplevel: pipe_test
+
   sim:
     default_tool: icarus
     filesets : [rtl, tb]
@@ -39,10 +60,6 @@ parameters:
   clk_freq_hz:
     datatype    : int
     description : Clock frequency in Hz
-    paramtype   : vlogparam
-  pulses:
-    datatype    : int
-    description : Number of pulses to run in testbench
     paramtype   : vlogparam
 
 
