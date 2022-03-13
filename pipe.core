@@ -1,0 +1,55 @@
+CAPI=2:
+name : SpokeFPGA:pipe:pipe:1.1
+
+filesets:
+  rtl:
+    files: [rtl/pipe.sv : {file_type : verilogSource}]
+
+  tb:
+    files: [sim/pipe_tb.sv : {file_type : systemVerilogSource}]
+
+  crosslink_nx_evn:
+    files: [crosslink_nx_evn/pipe.pdc : {file_type : PDC}]
+
+targets:
+  default: &default
+    filesets : [rtl]
+    toplevel: ["is_toplevel? (pipe)"]
+
+  crosslink_nx_evn:
+    default_tool : radiant
+    description : CrossLink NX Evaluation Board
+    filesets : [rtl, tb, crosslink_nx_evn]
+    parameters : [clk_freq_hz=12000000]
+    tools:
+      radiant : {part: LIFCL-40-9BG400C}
+    toplevel : pipe_tb    
+
+  sim:
+    default_tool: icarus
+    filesets : [rtl, tb]
+    tools:
+      modelsim:
+        vlog_options: [-timescale=1ns/1ns]
+      xsim:
+        xelab_options: [--timescale, 1ns/1ns]
+    toplevel: pipe_tb
+
+parameters:
+  clk_freq_hz:
+    datatype    : int
+    description : Clock frequency in Hz
+    paramtype   : vlogparam
+  pulses:
+    datatype    : int
+    description : Number of pulses to run in testbench
+    paramtype   : vlogparam
+
+
+#provider:
+#  name    : github
+#  user    : SpokeFPGA
+#  repo    : pipe
+#  version : v1
+
+
